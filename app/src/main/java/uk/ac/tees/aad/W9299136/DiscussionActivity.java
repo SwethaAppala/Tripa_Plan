@@ -26,12 +26,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.ac.tees.aad.W9299136.Utills.Common;
+import uk.ac.tees.aad.W9299136.Utills.Message;
+import uk.ac.tees.aad.W9299136.Utills.RecyclerViewDiscussionAdapter;
 import uk.ac.tees.aad.W9299136.Utills.User;
 
 public class DiscussionActivity extends AppCompatActivity {
@@ -47,23 +51,18 @@ public class DiscussionActivity extends AppCompatActivity {
     DatabaseReference mUserRef;
     CircleImageView profileImage;
     User user;
+    List<Message> messageList;
+    RecyclerViewDiscussionAdapter adapter;
+    ImageView back;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discussion);
-        mAuth = FirebaseAuth.getInstance();
-        mUSer = mAuth.getCurrentUser();
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        edSms = findViewById(R.id.edSms);
-        imageViewSend = findViewById(R.id.ImageViewSend);
-        mRef = FirebaseDatabase.getInstance().getReference().child("Discussion");
-        mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
-        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        InitVariable();
 
 
         imageViewSend.setOnClickListener(new View.OnClickListener() {
@@ -72,9 +71,31 @@ public class DiscussionActivity extends AppCompatActivity {
                 sendMessage();
             }
         });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         LoadMessages();
         LoadMyProfile();
 
+    }
+
+    private void InitVariable() {
+        mAuth = FirebaseAuth.getInstance();
+        mUSer = mAuth.getCurrentUser();
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        messageList = new ArrayList<>();
+        edSms = findViewById(R.id.edSms);
+        back = findViewById(R.id.imageView);
+        imageViewSend = findViewById(R.id.ImageViewSend);
+        mRef = FirebaseDatabase.getInstance().getReference().child("Discussion");
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
     private void LoadMyProfile() {
@@ -95,6 +116,30 @@ public class DiscussionActivity extends AppCompatActivity {
     }
 
     private void LoadMessages() {
+
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                messageList = new ArrayList<>();
+                if (snapshot.exists())
+                {
+                    for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                        Message message = snapshot1.getValue(Message.class);
+                        messageList.add(message);
+                    }
+                    adapter = new RecyclerViewDiscussionAdapter(messageList, DiscussionActivity.this);
+                    recyclerView.setAdapter(adapter);
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void sendMessage() {
@@ -105,7 +150,6 @@ public class DiscussionActivity extends AppCompatActivity {
             Date date = Calendar.getInstance().getTime();
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             String today = formatter.format(date);
-
 
 
             String key = mRef.push().getKey().toString();
@@ -122,9 +166,8 @@ public class DiscussionActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         edSms.setText(null);
                         Toast.makeText(DiscussionActivity.this, "Sent", Toast.LENGTH_SHORT).show();
-                    }else
-                    {
-                        Toast.makeText(DiscussionActivity.this, ""+task.getException(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(DiscussionActivity.this, "" + task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
