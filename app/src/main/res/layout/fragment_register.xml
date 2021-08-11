@@ -60,6 +60,7 @@
             android:drawableLeft="@drawable/ic_baseline_email_24"
             android:drawablePadding="10dp"
             android:ems="10"
+            android:textColor="@color/white"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:paddingLeft="20dp"
@@ -82,6 +83,7 @@
             android:drawablePadding="10dp"
             android:ems="10"
             android:hint="Password"
+            android:textColor="@color/white"
             android:inputType="textPassword"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
@@ -102,6 +104,7 @@
             android:drawableLeft="@drawable/ic_baseline_security_24"
             android:drawablePadding="10dp"
             android:ems="10"
+            android:textColor="@color/white"
             android:hint="Conform Password"
             android:inputType="textPassword"
             android:paddingLeft="20dp"
@@ -143,5 +146,8 @@
             app:layout_constraintTop_toBottomOf="@+id/btnRegister"
             app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

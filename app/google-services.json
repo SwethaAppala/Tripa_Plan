@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "139856898421",
+    "project_id": "tripplan-41268",
+    "storage_bucket": "tripplan-41268.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139856898421:android:53466d6e4edfcc043d4b3c",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.aad.W9299136"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139856898421-v1hel8kcptj252du89lmredbhbgjvkj5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.ac.tees.aad.W9299136",
+            "certificate_hash": "2bf5e655328be1945e456c053355fc78c97a8c0a"
+          }
+        },
+        {
+          "client_id": "139856898421-pan5j2pg95uan0vbf19fp3q9e8duvq23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvefvTRgJdJ5UKZic0SAgWuEYZlmHYF48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139856898421-pan5j2pg95uan0vbf19fp3q9e8duvq23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
