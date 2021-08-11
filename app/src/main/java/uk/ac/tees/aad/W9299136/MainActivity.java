@@ -1,5 +1,6 @@
 package uk.ac.tees.aad.W9299136;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,14 +12,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.ac.tees.aad.W9299136.Receiver.BroadcastReceiver;
+import uk.ac.tees.aad.W9299136.Utills.Common;
 import uk.ac.tees.aad.W9299136.Utills.NearByPlace;
 import uk.ac.tees.aad.W9299136.Utills.RecyclerViewPlacesAdapter;
+import uk.ac.tees.aad.W9299136.Utills.User;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerViewNearByPlaces;
@@ -26,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
     CardView mapCard, compassCard;
     CircleImageView profileImage;
     public static TextView timer;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    DatabaseReference mUserRef;
+    User user;
+    TextView Username;
+
 
 
     @Override
@@ -62,7 +81,34 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             }
         });
+        LoadMyProfile();
 
+    }
+    private void LoadMyProfile() {
+       if (Common.user==null)
+       {
+           mUserRef.child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                   if (snapshot.exists()) {
+                       user = snapshot.getValue(User.class);
+                       Common.user = user;
+                       Username.setText(user.getUsername());
+                       Picasso.get().load(user.getImage()).placeholder(R.drawable.user).into(profileImage);
+                   }
+               }
+
+               @Override
+               public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+               }
+           });
+       }else
+       {
+           Username.setText(Common.user.getUsername());
+           Picasso.get().load(Common.user.getImage()).placeholder(R.drawable.user).into(profileImage);
+
+       }
     }
 
     private void ShowTime() {
@@ -103,5 +149,12 @@ public class MainActivity extends AppCompatActivity {
         compassCard = findViewById(R.id.compass);
         profileImage = findViewById(R.id.profileImage);
         timer = findViewById(R.id.timer);
+        Username = findViewById(R.id.username);
+
+
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        mUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+
     }
 }
