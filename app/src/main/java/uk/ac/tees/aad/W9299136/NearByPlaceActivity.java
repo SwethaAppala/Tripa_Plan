@@ -5,10 +5,12 @@ import uk.ac.tees.aad.W9299136.*;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.androidmapsextensions.PolylineOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -26,11 +28,16 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -48,9 +55,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonParser;
+import com.google.maps.android.SphericalUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -66,16 +75,19 @@ import java.util.HashMap;
 import java.util.List;
 
 import uk.ac.tees.aad.W9299136.NearByPlaces.GetNearbyPlacesData;
+import uk.ac.tees.aad.W9299136.RouteLibrary.FetchURL;
+import uk.ac.tees.aad.W9299136.RouteLibrary.TaskLoadedCallback;
 
 
 public class NearByPlaceActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener,
-        LocationListener {
+        LocationListener, TaskLoadedCallback {
 
     LocationRequest mLocationRequest;
     LocationManager locationManager;
+    Polyline currentPolyline;
     public static final int GPS = 101;
     GoogleMap mGoogleMap;
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -85,6 +97,16 @@ public class NearByPlaceActivity extends AppCompatActivity
     static final int MY_PERMISSIONS_REQUEST_LOCATION = 111;
     Location mLocation;
     boolean isShownBefore = false;
+
+    CardView cardDirection;
+    TextView estimateTime, lable;
+    Button btnDirection;
+    ImageView ImageViewCar;
+
+    double selectLatitude1 = 0;
+    double selectLatitude2 = 0;
+    double selectLongitude1 = 0;
+    double selectLongitude2 = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +119,24 @@ public class NearByPlaceActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
 
-        Toast.makeText(this, "" + name, Toast.LENGTH_SHORT).show();
-        // mapView = mapFragment.getView();
+        cardDirection = findViewById(R.id.cardDirection);
+        estimateTime = findViewById(R.id.estimateTime);
+        lable = findViewById(R.id.lable);
+        btnDirection = findViewById(R.id.btnDirection);
+        ImageViewCar = findViewById(R.id.car);
+        cardDirection.setVisibility(View.GONE);
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(NearByPlaceActivity.this);
 
         getLocationPermisiion();
         getLocationUpdate();
+
+        btnDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawRoute();
+            }
+        });
 
 
     }
@@ -248,6 +282,48 @@ public class NearByPlaceActivity extends AppCompatActivity
         googleMap.setMyLocationEnabled(true);
         mGoogleMap.getMyLocation();
 
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull @NotNull Marker marker) {
+                cardDirection.setVisibility(View.VISIBLE);
+                selectLatitude2=marker.getPosition().latitude;
+                selectLongitude2=marker.getPosition().longitude;
+                 return false;
+            }
+        });
+        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(@NonNull @NotNull LatLng latLng) {
+                cardDirection.setVisibility(View.GONE);
+            }
+        });
+
+
+    }
+
+    private void DrawRoute() {
+        if (selectLatitude1 == 0 || selectLongitude1 == 0) {
+            Toast.makeText(this, "Select Current Location", Toast.LENGTH_SHORT).show();
+        } else if (selectLatitude2 == 0 | selectLongitude2 == 0) {
+            Toast.makeText(this, "Select Desctination Location", Toast.LENGTH_SHORT).show();
+        } else {
+
+
+            cardDirection.setVisibility(View.VISIBLE);
+            btnDirection.setVisibility(View.GONE);
+            ImageViewCar.setVisibility(View.VISIBLE);
+
+
+            lable.setVisibility(View.VISIBLE);
+            String time = getTimeTaken(new LatLng(selectLatitude1, selectLongitude2), new LatLng(selectLatitude2, selectLongitude2));
+            estimateTime.setText(time);
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(selectLatitude2, selectLongitude2), 10));
+
+            new FetchURL(this).execute(getUrlDirection(new LatLng(selectLatitude1, selectLongitude2), new LatLng(selectLatitude2, selectLongitude2)), "driving");
+
+
+        }
 
     }
 
@@ -281,13 +357,17 @@ public class NearByPlaceActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(@NonNull @NotNull Location location) {
+
         mLocation = location;
+        selectLatitude1=location.getLatitude();
+        selectLongitude1=location.getLongitude();
+
         if (!isShownBefore) {
+
+
             Object dataTransfer[] = new Object[2];
             GetNearbyPlacesData  getNearbyPlacesData = new GetNearbyPlacesData();
-
-
-            String url = getUrl(location.getLatitude(), location.getLongitude(), name);
+            String url = getUrlNearPlaces(location.getLatitude(), location.getLongitude(), name);
             dataTransfer[0] = mGoogleMap;
             dataTransfer[1] = url;
 
@@ -297,7 +377,7 @@ public class NearByPlaceActivity extends AppCompatActivity
 
     }
 
-    private String getUrl(double latitude , double longitude , String nearbyPlace)
+    private String getUrlNearPlaces(double latitude , double longitude , String nearbyPlace)
     {
 
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
@@ -306,8 +386,6 @@ public class NearByPlaceActivity extends AppCompatActivity
         googlePlaceUrl.append("&type="+nearbyPlace);
         googlePlaceUrl.append("&sensor=true");
         googlePlaceUrl.append("&key="+getString(R.string.google_map_key));
-
-        Log.d("MapsActivity", "url = "+googlePlaceUrl.toString());
 
         return googlePlaceUrl.toString();
     }
@@ -340,7 +418,51 @@ public class NearByPlaceActivity extends AppCompatActivity
         }
     }
 
+    private String getUrlDirection(LatLng origin, LatLng dest) {
+        Toast.makeText(this, "Call", Toast.LENGTH_SHORT).show();
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + "walking";
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + "AIzaSyB8Ba8J_tPh2BVjpMaFoUvb_NQ1NNaIiqw";
+    }
+
+
+    public String getTimeTaken(LatLng source, LatLng dest) {
+        double distance = SphericalUtil.computeDistanceBetween(source, dest);
+        String KM;
+        if (distance > 1000) {
+            KM= (int) distance / 1000 + "KM";
+        } else {
+            KM=(int) distance + "M";
+        }
+        double kms = distance / 1000;
+        double kms_per_min = 0.5;
+        double mins_taken = kms / kms_per_min;
+        int totalMinutes = (int) mins_taken;
+        if (totalMinutes < 60) {
+            return "" + totalMinutes + " mins";
+        } else {
+            String minutes = Integer.toString(totalMinutes % 60);
+            minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+            return (totalMinutes / 60) + " hour " + minutes + "mins (" + KM+" )";
+        }
+
+    }
 
 
 
+    @Override
+    public void onTaskDone(Object... values) {
+        if (currentPolyline != null)
+            currentPolyline.remove();
+        currentPolyline = mGoogleMap.addPolyline((com.google.android.gms.maps.model.PolylineOptions) values[0]);
+    }
 }
