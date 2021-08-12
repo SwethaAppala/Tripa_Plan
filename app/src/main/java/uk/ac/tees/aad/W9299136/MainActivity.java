@@ -142,11 +142,16 @@ public class MainActivity extends AppCompatActivity {
     private void InitRecyclerviewPlaces() {
         recyclerViewNearByPlaces.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
         List<NearByPlace> list = new ArrayList<>();
-        list.add(new NearByPlace("atm", R.drawable.ic_baseline_email_24));
-        list.add(new NearByPlace("bank", R.drawable.ic_baseline_email_24));
-        list.add(new NearByPlace("hospital", R.drawable.compass_icon));
-        list.add(new NearByPlace("restaurant", R.drawable.ic_baseline_security_24));
+        list.add(new NearByPlace("atm", R.drawable.ic_baseline_atm_24));
+        list.add(new NearByPlace("bank", R.drawable.ic_baseline_local_atm_24));
+        list.add(new NearByPlace("hospital", R.drawable.ic_baseline_local_hospital_24));
+        list.add(new NearByPlace("restaurant", R.drawable.ic_baseline_restaurant_24));
+        list.add(new NearByPlace("gas", R.drawable.ic_baseline_format_color_fill_24));
+        list.add(new NearByPlace("school", R.drawable.ic_baseline_school_24));
+
+
         RecyclerViewPlacesAdapter adapter = new RecyclerViewPlacesAdapter(list, MainActivity.this);
+        recyclerViewNearByPlaces.smoothScrollToPosition(list.size());
         recyclerViewNearByPlaces.setAdapter(adapter);
     }
 

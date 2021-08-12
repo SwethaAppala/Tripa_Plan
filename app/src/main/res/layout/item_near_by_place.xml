@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/view"
-        android:background="@color/purple_700">
+        android:background="@android:color/darker_gray">
 
         <ImageView
             android:id="@+id/icon"
@@ -20,7 +20,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_email_24" />
+            app:srcCompat="@drawable/ic_baseline_email_24"
+            app:tint="@color/white" />
 
         <TextView
             android:id="@+id/title"
