@@ -36,7 +36,7 @@ import uk.ac.tees.aad.W9299136.Utills.User;
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerViewNearByPlaces;
     CardView connectWithPeople;
-    CardView mapCard, compassCard;
+    CardView mapCard, compassCard,Direction;
     CircleImageView profileImage;
     public static TextView timer;
     FirebaseAuth mAuth;
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference mUserRef;
     User user;
     TextView Username;
+
 
 
 
@@ -79,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
+
+        Direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this, GoogleMapActivity.class);
+                intent.putExtra("key","mainActivity");
+                startActivity(intent);
             }
         });
         LoadMyProfile();
@@ -148,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
         mapCard = findViewById(R.id.map);
         compassCard = findViewById(R.id.compass);
         profileImage = findViewById(R.id.profileImage);
+        Direction = findViewById(R.id.Directions);
         timer = findViewById(R.id.timer);
         Username = findViewById(R.id.username);
-
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();

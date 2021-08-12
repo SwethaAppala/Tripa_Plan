@@ -3,6 +3,7 @@ package uk.ac.tees.aad.W9299136;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -128,7 +129,7 @@ public class PlacesActivity extends AppCompatActivity {
                         public void run() {
                             searchBar.clearSuggestions();
                         }
-                    }, 1000);
+                    }, 500);
 
                     hideKeyboard();
 
@@ -141,6 +142,8 @@ public class PlacesActivity extends AppCompatActivity {
 
 
                             Place place = fetchPlaceResponse.getPlace();
+
+
                             LatLng latLng = place.getLatLng();
                             if (latLng != null) {
 //                                MarkerOptions markerOptions = new MarkerOptions();
@@ -150,7 +153,17 @@ public class PlacesActivity extends AppCompatActivity {
 
                                 selectLatitude = latLng.latitude;
                                 selectLongitude = latLng.longitude;
-                                locationName=place.getName();
+                                locationName = place.getAddress();
+                                String placeName = searchBar.getSearchEditText().getText().toString();
+
+
+                                Intent intent = new Intent();
+                                intent.putExtra("latitude", selectLatitude);
+                                intent.putExtra("longitude", selectLongitude);
+                                intent.putExtra("placesName", placeName);
+                                setResult(RESULT_OK, intent);
+                                finish();
+
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -178,7 +191,7 @@ public class PlacesActivity extends AppCompatActivity {
     private void getSuggestionFromPlaces(String s) {
 
         FindAutocompletePredictionsRequest PR = FindAutocompletePredictionsRequest.builder()
-                .setCountry("uk").setTypeFilter(TypeFilter.ADDRESS)
+                .setCountry("pk").setTypeFilter(TypeFilter.ADDRESS)
                 .setSessionToken(token)
                 .setQuery(s)
                 .build();
