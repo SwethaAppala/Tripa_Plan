@@ -1,6 +1,7 @@
 package uk.ac.tees.aad.W9299136.Utills;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import uk.ac.tees.aad.W9299136.NearByPlaceActivity;
 import uk.ac.tees.aad.W9299136.R;
 
 public class RecyclerViewPlacesAdapter extends RecyclerView.Adapter<RecyclerViewPlacesAdapter.MyViewHolder> {
@@ -38,6 +40,14 @@ public class RecyclerViewPlacesAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(@NonNull @NotNull RecyclerViewPlacesAdapter.MyViewHolder holder, int position) {
         holder.Icon.setImageResource(list.get(position).getIcon());
         holder.Title.setText(list.get(position).getName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context, NearByPlaceActivity.class);
+                intent.putExtra("name",list.get(position).getName());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

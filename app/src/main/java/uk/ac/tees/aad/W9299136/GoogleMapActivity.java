@@ -45,6 +45,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.google.android.gms.maps.model.Polyline;
@@ -256,6 +257,7 @@ public class GoogleMapActivity extends AppCompatActivity
             return;
         }
         googleMap.setMyLocationEnabled(true);
+        mGoogleMap.getMyLocation();
 
     }
 
@@ -420,13 +422,6 @@ public class GoogleMapActivity extends AppCompatActivity
         }
         if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
-
-
-//            estimateTime = findViewById(R.id.estimateTime);
-//            lable = findViewById(R.id.lable);
-//            btnDirection = findViewById(R.id.btnDirection);
-//            ImageViewCar = findViewById(R.id.car);
-
 
                 selectLatitude2 = data.getDoubleExtra("latitude", 0.0);
                 selectLongitude2 = data.getDoubleExtra("longitude", 0.0);
