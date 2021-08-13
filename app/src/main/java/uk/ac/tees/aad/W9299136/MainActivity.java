@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         mapCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, GoogleMapActivity.class));
+                startActivity(new Intent(MainActivity.this, SimpleGoogleMapActivity.class));
             }
         });
 
@@ -79,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
+
+        Direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this, GoogleMapActivity.class);
+                intent.putExtra("key","mainActivity");
+                startActivity(intent);
             }
         });
 

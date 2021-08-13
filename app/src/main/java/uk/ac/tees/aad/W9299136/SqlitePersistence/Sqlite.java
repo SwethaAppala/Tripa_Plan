@@ -33,13 +33,6 @@ public class Sqlite extends SQLiteOpenHelper {
 
 
 
-
-    public void removeAllItem() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TABLE_SIGN_INFO);
-    }
-
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SIGN_INFO);
@@ -52,9 +45,7 @@ public class Sqlite extends SQLiteOpenHelper {
         values.put("date", date);
         values.put("email", email);
 
-
         long insert = db.insert(TABLE_SIGN_INFO, null, values);
-
         db.close();
     }
 
