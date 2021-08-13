@@ -168,46 +168,49 @@ public class DiscussionActivity extends AppCompatActivity {
         if (message.isEmpty()) {
             Toast.makeText(this, "Select Message", Toast.LENGTH_SHORT).show();
         } else {
-            Date date = Calendar.getInstance().getTime();
-            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            String today = formatter.format(date);
+            if (user != null) {
+                Date date = Calendar.getInstance().getTime();
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                String today = formatter.format(date);
 
 
-            String key = mRef.push().getKey().toString();
-            HashMap hashMap = new HashMap();
-            hashMap.put("message", message);
-            hashMap.put("key", key);
-            hashMap.put("userID", mUSer.getUid());
-            hashMap.put("date", today);
-            hashMap.put("username", user.getUsername());
+                String key = mRef.push().getKey().toString();
+                HashMap hashMap = new HashMap();
+                hashMap.put("message", message);
+                hashMap.put("key", key);
+                hashMap.put("userID", mUSer.getUid());
+                hashMap.put("date", today);
+                hashMap.put("username", user.getUsername());
 
-            mRef.child(key).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull @NotNull Task task) {
-                    if (task.isSuccessful()) {
-                        edSms.setText(null);
-                        sendNotification(key, message);
-                        Toast.makeText(DiscussionActivity.this, "Sent", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(DiscussionActivity.this, "" + task.getException(), Toast.LENGTH_SHORT).show();
+                mRef.child(key).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                        if (task.isSuccessful()) {
+                            edSms.setText(null);
+                            sendNotification(key, message);
+                            Toast.makeText(DiscussionActivity.this, "Sent", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(DiscussionActivity.this, "" + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            });
+                });
 
 
+            } else {
+                Toast.makeText(this, "Update Profile", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private void sendNotification(String key, String message) {
 
         for (int i = 0; i < userList.size(); i++) {
-            if (!userList.get(i).getUserID().equals(mUSer.getUid()))
-            {
+            if (!userList.get(i).getUserID().equals(mUSer.getUid())) {
                 HashMap hashMap = new HashMap();
                 hashMap.put("key", key);
                 hashMap.put("message", message);
                 hashMap.put("status", "unseen");
-                hashMap.put("userID",userList.get(i).getUserID());
+                hashMap.put("userID", userList.get(i).getUserID());
 
                 notification.child(userList.get(i).getUserID()).child(key).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
                     @Override
