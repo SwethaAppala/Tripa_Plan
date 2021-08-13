@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -65,6 +65,8 @@ public class ProfileActivity extends AppCompatActivity {
     User user;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 9999;
     private static final int IMAGE_PICKER_SELECT = 5555;
+    TextView loginHistory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,13 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         InitVariable();
+
+        loginHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, LoginHistoryActivity.class));
+            }
+        });
 
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,6 +247,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnUpdateProfile = findViewById(R.id.btnUpdateProfile);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         back = findViewById(R.id.imageView);
+        loginHistory = findViewById(R.id.loginHistory);
 
         RemoveEditMode();
         mAuth = FirebaseAuth.getInstance();

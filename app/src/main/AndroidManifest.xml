@@ -17,10 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TripPlan">
+        <activity android:name=".LoginHistoryActivity"></activity>
+
         <service
             android:name=".Services.NotificationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".LocationActivity" />
         <activity android:name=".NearByPlaceActivity" />
@@ -30,16 +32,14 @@
         <activity android:name=".DiscussionActivity" />
         <activity android:name=".GoogleMapActivity" />
         <activity android:name=".AuthActivity" />
-        <activity android:name=".IntroActivity" >
+        <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
 
         <receiver android:name=".Receiver.BroadcastReceiver">
             <intent-filter>

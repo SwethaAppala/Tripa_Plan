@@ -33,8 +33,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.Executor;
 
+import uk.ac.tees.aad.W9299136.SqlitePersistence.Sqlite;
 import uk.ac.tees.aad.W9299136.Utills.Common;
 import uk.ac.tees.aad.W9299136.Utills.CustomDialog;
 
@@ -43,19 +48,19 @@ import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRON
 import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
 public class LoginFragment extends Fragment {
+
     EditText edEmail, edPassword;
     Button btnLogin;
     TextView forgotPassword, createNewAccount;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     ConstraintLayout fingerPrint;
-
+    Sqlite sqlite;
 
     //from Dcos
     Executor executor;
     BiometricPrompt biometricPrompt;
     BiometricPrompt.PromptInfo promptInfo;
-
 
     public LoginFragment() {
         // Required empty public constructor
@@ -198,7 +203,8 @@ public class LoginFragment extends Fragment {
                     SaveSharePref(email, password);
                     customDialog.DismissDialog();
                     SendUserToMainActivity();
-                    Toast.makeText(getContext(), "Registration Completed!", Toast.LENGTH_SHORT).show();
+                    SaveHistory(email);
+                    Toast.makeText(getContext(), "Login Completed!", Toast.LENGTH_SHORT).show();
                 } else {
                     customDialog.DismissDialog();
                     Toast.makeText(getContext(), "" + task.getException(), Toast.LENGTH_SHORT).show();
@@ -206,6 +212,13 @@ public class LoginFragment extends Fragment {
             }
         });
 
+    }
+
+    private void SaveHistory(String email) {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String today = formatter.format(date);
+        sqlite.insertData(today,email);
     }
 
     private void SendUserToMainActivity() {
@@ -223,6 +236,7 @@ public class LoginFragment extends Fragment {
         fingerPrint = view.findViewById(R.id.fingerPrint);
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
+        sqlite=new Sqlite(getContext());
 
         createNewAccount.setOnClickListener(new View.OnClickListener() {
             @Override

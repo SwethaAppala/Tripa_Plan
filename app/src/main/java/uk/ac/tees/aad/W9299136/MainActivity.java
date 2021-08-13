@@ -28,6 +28,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.ac.tees.aad.W9299136.Receiver.BroadcastReceiver;
+import uk.ac.tees.aad.W9299136.Services.NotificationService;
 import uk.ac.tees.aad.W9299136.Utills.Common;
 import uk.ac.tees.aad.W9299136.Utills.NearByPlace;
 import uk.ac.tees.aad.W9299136.Utills.RecyclerViewPlacesAdapter;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference mUserRef;
     User user;
     TextView Username;
-
 
 
     @Override
@@ -91,7 +91,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         LoadMyProfile();
+        StartService();
 
+    }
+    private void StartService() {
+        Intent intent=new Intent(MainActivity.this, NotificationService.class);
+        startService(intent);
     }
     private void LoadMyProfile() {
        if (Common.user==null)

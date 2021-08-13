@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Ref;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,14 +50,13 @@ public class DiscussionActivity extends AppCompatActivity {
     DatabaseReference mRef;
 
     FirebaseUser mUser;
-    DatabaseReference mUserRef;
+    DatabaseReference mUserRef, notification;
     CircleImageView profileImage;
     User user;
     List<Message> messageList;
     RecyclerViewDiscussionAdapter adapter;
     ImageView back;
-
-
+    List<User> userList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,6 @@ public class DiscussionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_discussion);
 
         InitVariable();
-
 
         imageViewSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,8 +79,9 @@ public class DiscussionActivity extends AppCompatActivity {
         });
         LoadMessages();
         LoadMyProfile();
-
+        LoadAllUserForNotification();
     }
+
 
     private void InitVariable() {
         mAuth = FirebaseAuth.getInstance();
@@ -96,6 +97,8 @@ public class DiscussionActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        notification = FirebaseDatabase.getInstance().getReference().child("Notification");
+        userList = new ArrayList<>();
     }
 
     private void LoadMyProfile() {
@@ -115,14 +118,32 @@ public class DiscussionActivity extends AppCompatActivity {
         });
     }
 
+
+    private void LoadAllUserForNotification() {
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                userList = new ArrayList<>();
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    User u = snapshot1.getValue(User.class);
+                    userList.add(u);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void LoadMessages() {
 
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 messageList = new ArrayList<>();
-                if (snapshot.exists())
-                {
+                if (snapshot.exists()) {
                     for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                         Message message = snapshot1.getValue(Message.class);
                         messageList.add(message);
@@ -165,6 +186,7 @@ public class DiscussionActivity extends AppCompatActivity {
                 public void onComplete(@NonNull @NotNull Task task) {
                     if (task.isSuccessful()) {
                         edSms.setText(null);
+                        sendNotification(key, message);
                         Toast.makeText(DiscussionActivity.this, "Sent", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(DiscussionActivity.this, "" + task.getException(), Toast.LENGTH_SHORT).show();
@@ -173,6 +195,26 @@ public class DiscussionActivity extends AppCompatActivity {
             });
 
 
+        }
+    }
+
+    private void sendNotification(String key, String message) {
+
+        for (int i = 0; i < userList.size(); i++) {
+            if (!userList.get(i).getUserID().equals(mUSer.getUid()))
+            {
+                HashMap hashMap = new HashMap();
+                hashMap.put("key", key);
+                hashMap.put("message", message);
+                hashMap.put("status", "unseen");
+                hashMap.put("userID",userList.get(i).getUserID());
+
+                notification.child(userList.get(i).getUserID()).child(key).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                    }
+                });
+            }
         }
     }
 }
