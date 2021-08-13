@@ -1,5 +1,7 @@
 package uk.ac.tees.aad.W9299136;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -218,7 +221,7 @@ public class LoginFragment extends Fragment {
         Date date = Calendar.getInstance().getTime();
         DateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String today = formatter.format(date);
-        sqlite.insertData(today,email);
+        sqlite.insertData(today, email);
     }
 
     private void SendUserToMainActivity() {
@@ -236,7 +239,14 @@ public class LoginFragment extends Fragment {
         fingerPrint = view.findViewById(R.id.fingerPrint);
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        sqlite=new Sqlite(getContext());
+        sqlite = new Sqlite(getContext());
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SowDialog();
+            }
+        });
 
         createNewAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,13 +255,66 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        forgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Forgot Password", Toast.LENGTH_SHORT).show();
-            }
-        });
+
     }
+
+    private void SowDialog() {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+        alertDialog.setMessage("Enter Email Address");
+
+        final EditText input = new EditText(getContext());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        alertDialog.setView(input);
+        alertDialog.setIcon(R.drawable.ic_baseline_add_24);
+
+        alertDialog.setPositiveButton("Reset",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String email = input.getText().toString();
+                        if (email.matches(Common.emailPattern)) {
+                           ResetPassword(email);
+                        } else {
+                            Toast.makeText(getContext(), "Please Enter Email", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+    private void ResetPassword(String email) {
+
+        CustomDialog customDialog=new CustomDialog(getContext());
+        customDialog.ShowDialog("Wait");
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            customDialog.DismissDialog();
+                            Toast.makeText(getContext(), "Please Check Your email", Toast.LENGTH_SHORT).show();
+
+                        }else
+                        {
+                            Toast.makeText(getContext(), ""+task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
 
     private void SaveSharePref(String email, String password) {
         SharedPreferences.Editor editor = getActivity().getApplicationContext().getSharedPreferences("User", MODE_PRIVATE).edit();
