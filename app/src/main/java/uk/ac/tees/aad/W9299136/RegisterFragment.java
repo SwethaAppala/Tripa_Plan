@@ -1,6 +1,7 @@
 package uk.ac.tees.aad.W9299136;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import uk.ac.tees.aad.W9299136.Utills.Common;
 import uk.ac.tees.aad.W9299136.Utills.CustomDialog;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class RegisterFragment extends Fragment {
@@ -91,6 +94,7 @@ public class RegisterFragment extends Fragment {
                 {
                     customDialog.DismissDialog();
                     SendUserToMainActivity();
+                    SaveSharePref(email, password);
                     Toast.makeText(getContext(), "Registration Completed!", Toast.LENGTH_SHORT).show();
                 }else
                 {
@@ -128,5 +132,12 @@ public class RegisterFragment extends Fragment {
         });
 
 
+    }
+
+    private void SaveSharePref(String email, String password) {
+        SharedPreferences.Editor editor = getActivity().getApplicationContext().getSharedPreferences("User", MODE_PRIVATE).edit();
+        editor.putString("email", email);
+        editor.putString("password", password);
+        editor.apply();
     }
 }

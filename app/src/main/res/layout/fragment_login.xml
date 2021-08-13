@@ -11,7 +11,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="64dp"
         android:fontFamily="@font/alex_brush"
         android:text="Trip Plan"
         android:textColor="@color/white"
@@ -23,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="0dp"
         android:layout_height="400dp"
         android:layout_marginStart="24dp"
@@ -60,12 +61,12 @@
             android:drawableLeft="@drawable/ic_baseline_email_24"
             android:drawablePadding="10dp"
             android:ems="10"
-            android:textColor="@color/white"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:textColor="@color/white"
             android:textColorHint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,12 +83,12 @@
             android:drawableLeft="@drawable/ic_baseline_security_24"
             android:drawablePadding="10dp"
             android:ems="10"
-            android:textColor="@color/white"
             android:hint="Password"
             android:inputType="textPassword"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:textColor="@color/white"
             android:textColorHint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -135,4 +136,26 @@
             app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fingerPrint"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/ed_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_fingerprint_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

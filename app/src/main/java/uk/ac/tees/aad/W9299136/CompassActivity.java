@@ -31,10 +31,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         imageViewCompass = findViewById(R.id.imageViewCompass);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        sensorManager.registerListener(CompassActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(CompassActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_GAME);
     }
 
 
@@ -46,7 +42,16 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         sensorManager.unregisterListener(CompassActivity.this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+
+        sensorManager.registerListener(CompassActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(CompassActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_GAME);
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
