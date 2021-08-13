@@ -216,7 +216,7 @@ public class LoginFragment extends Fragment {
 
     private void SaveHistory(String email) {
         Date date = Calendar.getInstance().getTime();
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String today = formatter.format(date);
         sqlite.insertData(today,email);
     }

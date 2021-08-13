@@ -19,52 +19,29 @@ import java.util.List;
 import uk.ac.tees.aad.W9299136.R;
 
 public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerViewHistoryAdapter.MyViewHolder> {
-    List<Message> list;
+    List<LoginHistory> list;
     Context context;
-    FirebaseAuth mAuth;
-    FirebaseUser mUser;
 
 
-    public RecyclerViewHistoryAdapter(List<Message> list, Context context) {
+
+    public RecyclerViewHistoryAdapter(List<LoginHistory> list, Context context) {
         this.list = list;
         this.context = context;
-        mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
+
     }
 
     @NonNull
     @NotNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_item, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerViewHistoryAdapter.MyViewHolder holder, int position) {
-        if (list.get(position).getUserID().equals(mUser.getUid())) {
-            holder.message2.setVisibility(View.VISIBLE);
-            holder.username2.setVisibility(View.VISIBLE);
-
-            holder.message1.setVisibility(View.GONE);
-            holder.username1.setVisibility(View.GONE);
-
-            holder.message2.setText(list.get(position).getMessage());
-            holder.username2.setText(list.get(position).getUsername());
-
-        }else
-        {
-            holder.message2.setVisibility(View.GONE);
-            holder.username2.setVisibility(View.GONE);
-
-            holder.message1.setVisibility(View.VISIBLE);
-            holder.username1.setVisibility(View.VISIBLE);
-
-
-            holder.message1.setText(list.get(position).getMessage());
-            holder.username1.setText(list.get(position).getUsername());
-
-        }
+      holder.date.setText(list.get(position).getDate());
+      holder.email.setText(list.get(position).getEmail());
     }
 
     @Override
@@ -73,15 +50,14 @@ public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView username1, username2;
-        TextView message1, message2;
+        TextView email, date;
+
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
-            username1 = itemView.findViewById(R.id.username1);
-            username2 = itemView.findViewById(R.id.username2);
-            message1 = itemView.findViewById(R.id.message1);
-            message2 = itemView.findViewById(R.id.message2);
+
+            email = itemView.findViewById(R.id.email);
+            date = itemView.findViewById(R.id.date);
 
         }
     }
